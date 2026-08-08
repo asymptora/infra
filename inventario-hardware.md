@@ -1,200 +1,160 @@
 # Inventário de Hardware — Asymptora
 
+O inventário abaixo relaciona as especificações de hardware e suas respectivas consequências práticas para desenvolvimento de software, virtualização, infraestrutura, redes, armazenamento e operação de serviços.
+
 ## Notebook de Cazuza
 
 **Asus VivoBook X1504VA**
 
-CPU: Intel Core i5-1334U, 10 núcleos (2P + 8E), até 4.6GHz, 12ª geração (Raptor Lake), TDP 15W
-
-GPU: Intel Iris Xe Graphics integrado, 80 Execution Units, memória compartilhada com RAM
-
-RAM: 16GB DDR4 3200MHz
-
-Armazenamento: 512GB SSD
-
-Display: 15.6" FHD 1920x1080 anti-reflexo
-
-Wireless: WiFi 5 (802.11ac), antena 1x1, Bluetooth integrado
-
-Ethernet: ausente (nenhuma porta RJ45)
-
-Portas: 1x USB 3.2 Gen1 Type-C, 1x USB 3.2 Gen1 Type-A, 1x USB 2.0 Type-A, 1x HDMI 1.4, 1x P2 combo áudio
-
-Webcam: integrada
-
-Dimensões: 360.4 x 234.8 x 17.9mm
-
-Peso: aproximadamente 1.7kg
-
-Bateria: 42Wh
-
-Sistema Operacional: Pop!_OS (Linux)
+| Componente          | Especificação                                                                                     | Consequência prática                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CPU                 | Intel Core i5-1334U, 10 núcleos (2P + 8E), até 4.6GHz, 13ª geração (Raptor Lake), TDP 15W         | Os 10 núcleos permitem executar várias tarefas simultaneamente, como IDE, compilação, navegador, containers e ferramentas de desenvolvimento. Os núcleos Performance são adequados para tarefas com maior exigência de processamento, enquanto os Efficient favorecem cargas paralelas com menor consumo. O TDP de 15W favorece autonomia e temperatura, mas limita o desempenho sustentado em cargas muito pesadas quando comparado a CPUs de maior TDP.                     |
+| GPU                 | Intel Iris Xe Graphics integrado, 80 Execution Units, memória compartilhada com RAM               | A GPU utiliza a RAM do sistema em vez de possuir memória dedicada. Isso reduz a quantidade de memória disponível para a CPU e faz com que a largura de banda da RAM também seja compartilhada com a GPU. Para desenvolvimento de software convencional, o impacto é pequeno, mas pode ser relevante para computação gráfica, máquinas virtuais com uso de GPU ou workloads de processamento paralelo.                                                                         |
+| RAM                 | 16GB DDR4 3200MHz                                                                                 | 16GB é uma quantidade adequada para desenvolvimento Java, IDE, navegador, ferramentas de banco de dados e alguns containers simultaneamente. Pode se tornar limitante ao executar muitas VMs, containers ou ferramentas pesadas ao mesmo tempo, principalmente durante builds grandes.                                                                                                                                                                                        |
+| Armazenamento       | 512GB SSD                                                                                         | O SSD reduz significativamente a latência de armazenamento em comparação com HDD. Isso melhora inicialização do Linux, abertura da IDE, acesso ao código, instalação de dependências e operações de build. A capacidade de 512GB também permite manter ferramentas, projetos e ambientes locais, mas pode ficar limitada com muitas imagens Docker, VMs e caches. A interface do SSD não está especificada no inventário, portanto não é possível concluir se é SATA ou NVMe. |
+| Display             | 15.6" FHD 1920x1080 anti-reflexo                                                                  | A resolução permite trabalhar confortavelmente com IDE e terminal, embora ofereça menos espaço vertical e horizontal que telas de maior resolução. O acabamento antirreflexo facilita o trabalho prolongado.                                                                                                                                                                                                                                                                  |
+| Wireless            | WiFi 5 (802.11ac), antena 1x1, Bluetooth integrado                                                | WiFi 5 é suficiente para navegação, Git, acesso a servidores e desenvolvimento remoto. A configuração 1x1 reduz a capacidade máxima em relação a adaptadores com múltiplos fluxos espaciais. Em operações que envolvem grandes transferências para o homelab, a conexão sem fio pode ser mais limitante que uma conexão Gigabit cabeada.                                                                                                                                      |
+| Ethernet            | Ausente (nenhuma porta RJ45)                                                                      | O notebook não pode utilizar Ethernet cabeada diretamente. Para desenvolvimento e administração de servidores, isso elimina a possibilidade de obter uma conexão Gigabit por cabo sem utilizar um adaptador USB.                                                                                                                                                                                                                                                              |
+| Portas              | 1x USB 3.2 Gen1 Type-C, 1x USB 3.2 Gen1 Type-A, 1x USB 2.0 Type-A, 1x HDMI 1.4, 1x P2 combo áudio | Permitem conectar periféricos, armazenamento externo e monitores. Para desenvolvimento, USB 3.x é útil para discos externos e outros dispositivos de alta velocidade. A USB 2.0 é inadequada para armazenamento externo rápido devido à menor largura de banda.                                                                                                                                                                                                               |
+| Webcam              | Integrada                                                                                         | Permite reuniões e comunicação remota sem hardware adicional. Não possui impacto relevante no desempenho de aplicações de software.                                                                                                                                                                                                                                                                                                                                           |
+| Dimensões           | 360.4 x 234.8 x 17.9mm                                                                            | Tem impacto principalmente na mobilidade e ergonomia, não no desempenho de software.                                                                                                                                                                                                                                                                                                                                                                                          |
+| Peso                | Aproximadamente 1.7kg                                                                             | Facilita transporte para trabalho e estudo. Não possui impacto direto na execução de software.                                                                                                                                                                                                                                                                                                                                                                                |
+| Bateria             | 42Wh                                                                                              | A capacidade influencia o tempo de operação longe da tomada. Cargas pesadas, como compilação contínua, VMs e containers, aumentam o consumo e reduzem a autonomia.                                                                                                                                                                                                                                                                                                            |
+| Sistema Operacional | Pop!_OS (Linux)                                                                                   | Linux fornece um ambiente adequado para desenvolvimento Java e infraestrutura. Permite utilizar diretamente ferramentas como Git, SSH, Docker/Podman, ferramentas de compilação e diversos utilitários de administração de servidores.                                                                                                                                                                                                                                        |
 
 ## Notebook de Janaína
 
 **Vaio FE16 VJFE69F11X-B0121H**
 
-CPU: AMD Ryzen 7 5825U, 8 núcleos / 16 threads, 2.0GHz base / 4.5GHz boost, arquitetura Zen 3, TDP 15W
-
-GPU: AMD Radeon Graphics integrado (Zen 3)
-
-RAM: 16GB DDR4 3200MHz, 2 slots SO-DIMM (expansível até 64GB)
-
-Armazenamento: 512GB SSD NVMe
-
-Display: 16" IPS WUXGA 1920x1200, proporção 16:10, anti-reflexo
-
-Wireless: WiFi 6 (802.11ax)
-
-Ethernet: RJ45 integrado
-
-Webcam: 720p HD com shutter mecânico
-
-Microfone: duplo com cancelamento de ruído
-
-Portas: HDMI, USB-A, USB-C, RJ45, P2 combo
-
-Teclado: ABNT2, resistente a respingos, teclado numérico integrado, Ergo Lift
-
-Segurança de hardware: slot Kensington
-
-Bateria: 55Wh, até 10h autonomia, carregador 65W
-
-Dimensões: 359 x 255.3 x 19.8mm
-
-Peso: 1.85kg
-
-Sistema Operacional: Pop!_OS (Linux)
+| Componente            | Especificação                                                                                     | Consequência prática                                                                                                                                                                                                                                                                                            |
+| --------------------- | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CPU                   | AMD Ryzen 7 5825U, 8 núcleos / 16 threads, 2.0GHz base / 4.5GHz boost, arquitetura Zen 3, TDP 15W | Os 8 núcleos e 16 threads favorecem workloads paralelos, como compilação, execução de múltiplos processos, containers e ferramentas de desenvolvimento simultâneas. É uma configuração adequada para desenvolvimento de software e multitarefa.                                                                 |
+| GPU                   | AMD Radeon Graphics integrado (Zen 3)                                                             | A GPU é integrada e utiliza memória do sistema. Para desenvolvimento convencional não representa uma limitação importante, mas não possui o mesmo comportamento de uma GPU dedicada para workloads gráficos ou computacionais.                                                                                  |
+| RAM                   | 16GB DDR4 3200MHz, 2 slots SO-DIMM (expansível até 64GB)                                          | 16GB atende ao uso convencional de desenvolvimento, mas a possibilidade de expansão para até 64GB permite aumentar significativamente a quantidade de VMs, containers e serviços executados localmente. Isso é particularmente útil para ambientes de desenvolvimento mais próximos de uma infraestrutura real. |
+| Armazenamento         | 512GB SSD NVMe                                                                                    | NVMe utiliza o protocolo desenvolvido para armazenamento flash e oferece menor overhead e maior paralelismo que SATA. Isso favorece operações com muitos acessos ao disco, como builds, instalação de dependências, manipulação de projetos grandes e execução de VMs.                                          |
+| Display               | 16" IPS WUXGA 1920x1200, proporção 16:10, anti-reflexo                                            | A proporção 16:10 fornece mais espaço vertical que 16:9 na mesma resolução horizontal. Isso é útil para IDEs, código, terminal e documentação, pois permite visualizar mais linhas simultaneamente.                                                                                                             |
+| Wireless              | WiFi 6 (802.11ax)                                                                                 | WiFi 6 oferece maior eficiência em ambientes com vários dispositivos e pode proporcionar maior desempenho que WiFi 5. É útil para desenvolvimento remoto, acesso a servidores e transferência de arquivos, embora a velocidade real também dependa do roteador e das condições da rede.                         |
+| Ethernet              | RJ45 integrado                                                                                    | Permite conexão cabeada diretamente ao equipamento. Para administração de servidores, transferência de arquivos, backups e acesso ao homelab, uma conexão Ethernet pode oferecer menor latência e maior estabilidade que WiFi.                                                                                  |
+| Webcam                | 720p HD com shutter mecânico                                                                      | Permite videoconferência e oferece um mecanismo físico para bloquear a câmera. Não possui impacto relevante na execução de software.                                                                                                                                                                            |
+| Microfone             | Duplo com cancelamento de ruído                                                                   | Melhora a captura de áudio em reuniões e chamadas. Não possui impacto relevante na execução de software.                                                                                                                                                                                                        |
+| Portas                | HDMI, USB-A, USB-C, RJ45, P2 combo                                                                | Permitem conectar monitores, armazenamento externo, periféricos e rede cabeada. A presença de RJ45 é particularmente relevante para administração de infraestrutura.                                                                                                                                            |
+| Teclado               | ABNT2, resistente a respingos, teclado numérico integrado, Ergo Lift                              | O teclado ABNT2 é adequado para escrita em português e programação. O teclado numérico pode ser útil para atividades administrativas, mas não altera o desempenho dos softwares.                                                                                                                                |
+| Segurança de hardware | Slot Kensington                                                                                   | Permite fixação física do equipamento. Não possui impacto direto na engenharia de software.                                                                                                                                                                                                                     |
+| Bateria               | 55Wh, até 10h autonomia, carregador 65W                                                           | Maior capacidade de bateria favorece trabalho prolongado fora da tomada. Cargas de CPU, VMs e builds reduzem a autonomia real em relação ao valor nominal.                                                                                                                                                      |
+| Dimensões             | 359 x 255.3 x 19.8mm                                                                              | Impactam principalmente mobilidade e ergonomia, sem consequência direta para software.                                                                                                                                                                                                                          |
+| Peso                  | 1.85kg                                                                                            | Influencia a mobilidade, mas não o desempenho de aplicações.                                                                                                                                                                                                                                                    |
+| Sistema Operacional   | Pop!_OS (Linux)                                                                                   | Fornece um ambiente adequado para desenvolvimento Java, Git, SSH, containers, bancos de dados locais e ferramentas de infraestrutura.                                                                                                                                                                           |
 
 ## Server 1 (Homelab)
 
 **Samsung NP350XAA-KF4BR (Essentials E30)**
 
-CPU: Intel Core i3-7020U, dual-core / 4 threads, 2.30GHz, 3MB L3 cache, geração Kaby Lake, TDP 15W
-
-GPU: Intel HD Graphics 620 integrado, memória compartilhada
-
-RAM: 16GB DDR4 (upgrade efetuado; 1 slot SO-DIMM, operação single-channel)
-
-Armazenamento: 1TB HDD SATA 5400 RPM + SSD M.2 SATA 240GB (WD Green, modelo WDS240G0BB-00BJJF0)
-
-Display: 15.6" FHD LED 1920x1080 anti-reflexo, painel TN
-
-Wireless: WiFi 5 (802.11ac), antena 1x1, Bluetooth 4.1
-
-Ethernet: Fast Ethernet RJ45, máximo 10/100 Mbps (não Gigabit)
-
-Portas: 1x HDMI, 2x USB 3.0, 1x USB 2.0, 1x RJ45, 1x P2 combo áudio
-
-Webcam: integrada
-
-Teclado: ABNT2 com teclado numérico integrado
-
-Segurança de hardware: slot Kensington, módulo TPM
-
-Bateria: 43Wh, carregador AC 40W
-
-Dimensões: 377.4 x 248.6 x 19.9mm
-
-Peso: 1.95kg
-
-Sistema Operacional: Proxmox VE 9.2
+| Componente          | Especificação                                                                                 | Consequência prática                                                                                                                                                                                                                                                                                                                                                |
+| ------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CPU                 | Intel Core i3-7020U, dual-core / 4 threads, 2.30GHz, 3MB L3 cache, geração Kaby Lake, TDP 15W | Apenas 2 núcleos físicos e 4 threads limitam a quantidade de workloads que podem executar simultaneamente com bom desempenho. Em Proxmox, várias VMs ou containers concorrentes podem disputar CPU. É adequado para serviços leves, mas pode se tornar gargalo em cargas de compilação, bancos de dados ou múltiplas VMs.                                           |
+| GPU                 | Intel HD Graphics 620 integrado, memória compartilhada                                        | A GPU utiliza memória RAM do sistema. Para um servidor Proxmox sem carga gráfica relevante, possui pouca importância prática.                                                                                                                                                                                                                                       |
+| RAM                 | 16GB DDR4, 1 slot SO-DIMM, operação single-channel                                            | Single-channel reduz a largura de banda disponível entre CPU e memória em relação ao dual-channel. Em workloads limitados por largura de banda de memória, isso reduz o desempenho. Os 16GB também estabelecem o limite físico de memória disponível para o Proxmox e suas VMs/containers, sendo necessário reservar memória para o próprio host.                   |
+| Armazenamento       | 1TB HDD SATA 5400 RPM + SSD M.2 SATA 240GB (WD Green, modelo WDS240G0BB-00BJJF0)              | O HDD oferece grande capacidade, mas possui latência mecânica elevada e baixo desempenho em I/O aleatório. É inadequado para workloads que realizam muitos acessos aleatórios, como bancos de dados e discos de VMs. O SSD SATA possui latência muito menor e é mais adequado para sistema operacional, containers, VMs e serviços que exigem maior responsividade. |
+| HDD                 | 1TB SATA 5400 RPM                                                                             | A rotação de 5400 RPM implica maior latência mecânica em relação a SSD. Em um servidor, isso pode ser percebido em inicialização de VMs, acesso a bancos de dados, logs e operações aleatórias de leitura/escrita. Pode ser útil para armazenamento de arquivos, backups e dados que não exigem baixa latência.                                                     |
+| SSD                 | 240GB M.2 SATA                                                                                | O SSD é significativamente mais rápido que o HDD em latência e I/O aleatório, mas permanece limitado pela interface SATA. É uma opção mais adequada para o sistema Proxmox, containers e VMs do que o HDD.                                                                                                                                                          |
+| Display             | 15.6" FHD LED 1920x1080 anti-reflexo, painel TN                                               | Como o equipamento opera como servidor Proxmox, o display possui pouca relevância durante a operação normal. Administração pode ser feita remotamente por SSH ou pela interface web do Proxmox.                                                                                                                                                                     |
+| Wireless            | WiFi 5 (802.11ac), antena 1x1, Bluetooth 4.1                                                  | Para um servidor de infraestrutura, WiFi não é ideal como meio principal de comunicação. Uma conexão cabeada oferece maior estabilidade e previsibilidade para serviços, VMs e containers.                                                                                                                                                                          |
+| Ethernet            | Fast Ethernet RJ45, máximo 10/100 Mbps (não Gigabit)                                          | A interface limita a comunicação cabeada a 100 Mbps. Isso pode se tornar um gargalo para transferência de arquivos, backups, acesso a armazenamento pela rede e comunicação entre serviços. Mesmo que o roteador possua portas Gigabit, este servidor continuará limitado pela interface 10/100.                                                                    |
+| Portas              | 1x HDMI, 2x USB 3.0, 1x USB 2.0, 1x RJ45, 1x P2 combo áudio                                   | Permitem manutenção local e conexão de periféricos. USB 3.0 pode ser utilizada para armazenamento externo ou mídia de instalação.                                                                                                                                                                                                                                   |
+| Teclado             | ABNT2 com teclado numérico integrado                                                          | Facilita administração local quando necessário. Como o servidor pode ser administrado remotamente, possui pouca relevância durante a operação normal.                                                                                                                                                                                                               |
+| Segurança           | Slot Kensington, módulo TPM                                                                   | O TPM fornece recursos de segurança baseados em hardware. O slot Kensington permite proteção física do equipamento. Não possuem impacto direto no desempenho das aplicações.                                                                                                                                                                                        |
+| Bateria             | 43Wh, carregador AC 40W                                                                       | Permite operação temporária sem alimentação externa, mas a bateria não deve ser considerada substituta de uma fonte de energia adequada para um servidor.                                                                                                                                                                                                           |
+| Dimensões           | 377.4 x 248.6 x 19.9mm                                                                        | Impactam principalmente espaço físico e organização do homelab. Não afetam o desempenho de software.                                                                                                                                                                                                                                                                |
+| Peso                | 1.95kg                                                                                        | Impacta somente mobilidade e instalação física.                                                                                                                                                                                                                                                                                                                     |
+| Sistema Operacional | Proxmox VE 9.2                                                                                | Proxmox fornece virtualização baseada em KVM e containers LXC. Permite utilizar o equipamento como host de múltiplos serviços isolados, sendo limitado principalmente pela CPU, RAM, armazenamento e rede disponíveis.                                                                                                                                              |
 
 ## Server 2 (Homelab)
 
 **Samsung NP350XAA-KF4BR (Essentials E30)**
 
-CPU: Intel Core i3-7020U, dual-core / 4 threads, 2.30GHz, 3MB L3 cache, geração Kaby Lake, TDP 15W
-
-GPU: Intel HD Graphics 620 integrado, memória compartilhada
-
-RAM: 16GB DDR4 (upgrade efetuado; 1 slot SO-DIMM, operação single-channel)
-
-Armazenamento: 1TB HDD SATA 5400 RPM (slot M.2 disponível, não utilizado)
-
-Display: 15.6" FHD LED 1920x1080 anti-reflexo, painel TN
-
-Wireless: WiFi 5 (802.11ac), antena 1x1, Bluetooth 4.1
-
-Ethernet: Fast Ethernet RJ45, máximo 10/100 Mbps (não Gigabit)
-
-Portas: 1x HDMI, 2x USB 3.0, 1x USB 2.0, 1x RJ45, 1x P2 combo áudio
-
-Webcam: integrada
-
-Teclado: ABNT2 com teclado numérico integrado
-
-Segurança de hardware: slot Kensington, módulo TPM
-
-Bateria: 43Wh, carregador AC 40W
-
-Dimensões: 377.4 x 248.6 x 19.9mm
-
-Peso: 1.95kg
-
-Sistema Operacional: Proxmox VE 9.2
+| Componente          | Especificação                                                                                 | Consequência prática                                                                                                                                                                                                                                                                                                                        |
+| ------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CPU                 | Intel Core i3-7020U, dual-core / 4 threads, 2.30GHz, 3MB L3 cache, geração Kaby Lake, TDP 15W | Os 2 núcleos físicos e 4 threads limitam a capacidade de executar muitas cargas simultaneamente. Em virtualização, VMs e containers concorrentes disputam os mesmos recursos de CPU, podendo gerar contenção em workloads mais pesados.                                                                                                     |
+| GPU                 | Intel HD Graphics 620 integrado, memória compartilhada                                        | Utiliza memória RAM do sistema. Como o servidor não depende de processamento gráfico para seus principais serviços, possui pouca relevância prática para o ambiente de virtualização.                                                                                                                                                       |
+| RAM                 | 16GB DDR4, 1 slot SO-DIMM, operação single-channel                                            | A operação single-channel reduz a largura de banda de memória disponível. Os 16GB também limitam a quantidade total de memória que pode ser distribuída entre o Proxmox, VMs e containers. Em um ambiente com vários serviços simultâneos, memória insuficiente pode ser mais problemática que a velocidade da memória.                     |
+| Armazenamento       | 1TB HDD SATA 5400 RPM, slot M.2 disponível, não utilizado                                     | O HDD oferece capacidade elevada, mas possui alta latência e baixo desempenho em I/O aleatório. Isso pode limitar VMs, bancos de dados e serviços que realizam muitas operações de leitura e escrita. O slot M.2 disponível representa uma possibilidade de upgrade para SSD, que reduziria significativamente a latência de armazenamento. |
+| Display             | 15.6" FHD LED 1920x1080 anti-reflexo, painel TN                                               | Tem pouca importância durante a operação normal do servidor, pois o Proxmox pode ser administrado remotamente.                                                                                                                                                                                                                              |
+| Wireless            | WiFi 5 (802.11ac), antena 1x1, Bluetooth 4.1                                                  | Para um servidor, WiFi deve ser considerado secundário. A conexão cabeada é preferível por estabilidade e previsibilidade.                                                                                                                                                                                                                  |
+| Ethernet            | Fast Ethernet RJ45, máximo 10/100 Mbps (não Gigabit)                                          | Limita o servidor a 100 Mbps de rede. Pode restringir backups, transferência de arquivos, acesso remoto a serviços e comunicação entre workloads. A limitação permanece mesmo que o restante da infraestrutura seja Gigabit.                                                                                                                |
+| Portas              | 1x HDMI, 2x USB 3.0, 1x USB 2.0, 1x RJ45, 1x P2 combo áudio                                   | Permitem manutenção física e utilização de dispositivos externos. USB 3.0 pode ser usada para armazenamento externo, backups ou instalação do sistema.                                                                                                                                                                                      |
+| Teclado             | ABNT2 com teclado numérico integrado                                                          | Útil para manutenção local, mas sem impacto relevante na operação dos serviços.                                                                                                                                                                                                                                                             |
+| Segurança           | Slot Kensington, módulo TPM                                                                   | Fornecem mecanismos de segurança física e de hardware, mas não alteram diretamente o desempenho das VMs ou containers.                                                                                                                                                                                                                      |
+| Bateria             | 43Wh, carregador AC 40W                                                                       | Pode manter o equipamento temporariamente ligado sem alimentação externa, mas não substitui uma solução adequada de energia para operação contínua.                                                                                                                                                                                         |
+| Dimensões           | 377.4 x 248.6 x 19.9mm                                                                        | Influenciam somente a organização física do homelab.                                                                                                                                                                                                                                                                                        |
+| Peso                | 1.95kg                                                                                        | Impacta apenas mobilidade e instalação física.                                                                                                                                                                                                                                                                                              |
+| Sistema Operacional | Proxmox VE 9.2                                                                                | Permite executar VMs e containers isolados no mesmo hardware. A capacidade prática do host é determinada principalmente pelos recursos de CPU, RAM, armazenamento e rede disponíveis.                                                                                                                                                       |
 
 ## ONT do ISP
 
 **ZTE ZXHN F6645P**
 
-Tipo: GPON ONT (Optical Network Terminal)
-
-Firmware: V2.0.12P1N8
-
-Modo atual: bridge (NAT + DHCP + WiFi desativados; roteamento feito pelo Cudy WR3000)
-
-Portas WAN: 1x GPON (fibra óptica)
-
-Controle: firmware proprietário Claro, sem acesso root confirmado até desbloqueio
+| Componente | Especificação                                                             | Consequência prática                                                                                                                                                                                                                                                       |
+| ---------- | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tipo       | GPON ONT (Optical Network Terminal)                                       | Converte o sinal óptico da fibra em conectividade Ethernet para a rede local. É o ponto de entrada da conexão do ISP no ambiente.                                                                                                                                          |
+| Firmware   | V2.0.12P1N8                                                               | A versão do firmware determina funcionalidades, correções e limitações do equipamento. Como é firmware fornecido pelo ISP, a capacidade de administração pode ser limitada pelo provedor.                                                                                  |
+| Modo atual | Bridge (NAT + DHCP + WiFi desativados; roteamento feito pelo Cudy WR3000) | A ONT atua essencialmente como ponte entre a fibra e o roteador. O Cudy concentra NAT, DHCP, firewall e roteamento. Isso evita uma camada adicional de NAT e centraliza as funções de rede no roteador.                                                                    |
+| Porta WAN  | 1x GPON (fibra óptica)                                                    | É a interface responsável pela conexão com a infraestrutura do ISP. A velocidade efetiva da Internet depende do plano contratado e das capacidades da infraestrutura GPON.                                                                                                 |
+| Controle   | Firmware proprietário Claro, sem acesso root confirmado até desbloqueio   | Limita a capacidade de alterar configurações internas ou instalar software. Para engenharia de infraestrutura, isso significa que o equipamento deve ser tratado como componente controlado pelo ISP, enquanto funções customizáveis devem permanecer no roteador próprio. |
 
 ## Roteador
 
 **Cudy WR3000 v1**
 
-CPU: MediaTek MT7981BA (Filogic 820), dual-core ARM Cortex-A53, 1.3GHz
-
-RAM: 256MB DDR3L
-
-Flash: 16MB SPI NOR
-
-WiFi: AX3000 dual-band
-
-2.4GHz: 802.11ax 2x2 MIMO, até 574Mbps
-
-5GHz: 802.11ax 2x3 MIMO, 160MHz, até 2402Mbps
-
-Antennas: 4 fixas omnidirecionais externas
-
-Portas: 1x WAN Gigabit (1GbE) + 3x LAN Gigabit (1GbE)
-
-Aceleração de hardware: WED (Wireless Ethernet Driver) para offload de pacotes
-
-Consumo: 7.5W máximo, 3.6W idle
-
-Fonte: 12V / 1A DC
-
-Dimensões: 200 x 120 x 35mm
-
-Peso: 295g
-
-Sistema Operacional: OpenWrt 25.12.5
-
-Status: configurado e operando
+| Componente             | Especificação                                                     | Consequência prática                                                                                                                                                                                                                                    |
+| ---------------------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CPU                    | MediaTek MT7981BA (Filogic 820), dual-core ARM Cortex-A53, 1.3GHz | Processa funções de roteamento, firewall, NAT e outros serviços de rede. É suficiente para o uso doméstico e para o tráfego esperado do homelab, embora a capacidade real dependa da configuração e dos recursos de aceleração disponíveis.             |
+| RAM                    | 256MB DDR3L                                                       | A memória é utilizada pelo sistema operacional e pelos serviços de rede. É suficiente para o OpenWrt e para as funções configuradas, mas limita a quantidade de serviços adicionais que podem ser executados diretamente no roteador.                   |
+| Flash                  | 16MB SPI NOR                                                      | Armazena o firmware e configurações do roteador. A capacidade é pequena, portanto não é adequada para armazenar aplicações ou grandes quantidades de dados.                                                                                             |
+| WiFi                   | AX3000 dual-band                                                  | WiFi 6 fornece maior eficiência e capacidade que gerações anteriores. É adequado para conectar dispositivos da rede doméstica sem transformar necessariamente o WiFi no principal gargalo da infraestrutura.                                            |
+| 2.4GHz                 | 802.11ax 2x2 MIMO, até 574Mbps                                    | Oferece maior alcance e capacidade de atravessar obstáculos que 5GHz, porém com menor capacidade de throughput. É adequado para dispositivos IoT e equipamentos que priorizam alcance.                                                                  |
+| 5GHz                   | 802.11ax 2x3 MIMO, 160MHz, até 2402Mbps                           | Oferece maior capacidade de transferência e é mais adequado para notebooks e dispositivos que realizam transferências de dados. A velocidade real depende do cliente WiFi, distância, interferência e largura de canal disponível.                      |
+| Antenas                | 4 fixas omnidirecionais externas                                  | Permitem cobertura sem fio em diferentes direções. A qualidade real da cobertura também depende do posicionamento físico do roteador e das características do ambiente.                                                                                 |
+| WAN                    | 1x WAN Gigabit (1GbE)                                             | Permite receber até 1Gbps pela interface Ethernet, evitando que a porta WAN seja um gargalo para planos de Internet de até 1Gbps.                                                                                                                       |
+| LAN                    | 3x LAN Gigabit (1GbE)                                             | Permite conectar servidores e outros equipamentos via Ethernet Gigabit. Isso é especialmente importante no homelab porque os servidores possuem interfaces 10/100, tornando o próprio servidor o gargalo de rede, e não o switch integrado do roteador. |
+| Aceleração de hardware | WED (Wireless Ethernet Driver) para offload de pacotes            | Parte do processamento de rede pode ser descarregada para mecanismos especializados, reduzindo a carga da CPU e permitindo maior throughput.                                                                                                            |
+| Consumo                | 7.5W máximo, 3.6W idle                                            | O baixo consumo é adequado para um equipamento que permanece ligado continuamente, reduzindo o custo operacional do homelab.                                                                                                                            |
+| Fonte                  | 12V / 1A DC                                                       | Fornece a alimentação elétrica necessária ao equipamento. Não possui consequência direta na engenharia de software.                                                                                                                                     |
+| Dimensões              | 200 x 120 x 35mm                                                  | Impactam somente instalação e posicionamento físico.                                                                                                                                                                                                    |
+| Peso                   | 295g                                                              | Impacta apenas mobilidade e instalação física.                                                                                                                                                                                                          |
+| Sistema Operacional    | OpenWrt 25.12.5                                                   | Permite maior controle e customização da infraestrutura de rede em comparação com firmware proprietário. Pode ser utilizado para configurar firewall, DHCP, DNS, VLANs, roteamento e outras funções de infraestrutura.                                  |
+| Status                 | Configurado e operando                                            | Indica que o equipamento já está desempenhando o papel de roteador principal da infraestrutura.                                                                                                                                                         |
 
 ## Celulares (2 unidades)
 
+### Higor
 
-**Higor**: Samsung Android Galaxy A31s
+**Samsung Android Galaxy A31s**
 
-**Janaína**: Samsung Android Galaxy A17 5G
+| Componente  | Especificação               | Consequência prática                                                                                                                                                              |
+| ----------- | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Dispositivo | Samsung Android Galaxy A31s | Atua principalmente como dispositivo cliente da infraestrutura. Pode ser utilizado para testar conectividade WiFi, aplicações web, APIs e serviços disponibilizados pelo homelab. |
+
+### Janaína
+
+**Samsung Android Galaxy A17 5G**
+
+| Componente  | Especificação                 | Consequência prática                                                                                                                                                                                                |
+| ----------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Dispositivo | Samsung Android Galaxy A17 5G | Pode ser utilizado como cliente para validar serviços web, APIs e conectividade da rede. A conectividade móvel também permite testar um serviço externamente à rede local quando utilizado através da rede celular. |
 
 ## IoT
 
-Amazon Fire TV Stick — geração específica não informada.
+**Amazon Fire TV Stick — geração específica não informada**
+
+| Componente  | Especificação                                          | Consequência prática                                                                                                                                                                                                   |
+| ----------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Dispositivo | Amazon Fire TV Stick, geração específica não informada | É um cliente da rede local e pode ser utilizado para validar conectividade WiFi e acesso a serviços. A geração precisa ser identificada caso seja necessário conhecer suas capacidades específicas de rede e hardware. |
 
 ## Pendências de auditoria
 
-- [ ] Confirmar quantidade exata de portas LAN da ONT (verificar via nmap)
-- [ ] Confirmar especificações exatas do WiFi da ONT (consultar painel do dispositivo)
-- [ ] Confirmar geração do Amazon Fire TV Stick
+* [ ] Confirmar quantidade exata de portas LAN da ONT (verificar via nmap)
+* [ ] Confirmar especificações exatas do WiFi da ONT (consultar painel do dispositivo)
+* [ ] Confirmar geração do Amazon Fire TV Stick
+* [ ] Confirmar se o SSD de 512GB do Notebook de Cazuza utiliza interface SATA ou NVMe
+* [ ] Confirmar capacidade máxima de RAM e possibilidade de upgrade do Notebook de Cazuza
+* [ ] Avaliar possibilidade de utilização do slot M.2 do Server 2 para instalação de SSD
