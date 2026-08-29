@@ -1,0 +1,9 @@
+[Unit]
+Description=Meu servico de logs
+
+[Service]
+ExecStart=/bin/bash /home/naina/dev/katas-java/m4/scriptm4.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
