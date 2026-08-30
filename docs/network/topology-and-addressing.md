@@ -406,3 +406,6 @@ após o diagnóstico para não poluir o log.
 | 2026-08-22 | Higor Cazuza | Reescrita: documentada topologia real de três redes WiFi segregadas (`lan`/`iot`/`familia`), isolamento L2/L3 e justificativa de desenho (bridges dedicadas vs. VLAN) |
 | 2026-08-22 | Higor Cazuza | Adicionado host Fire TV Stick (`192.168.20.212`) à zona `iot` — diagrama, tabela de endereçamento (nova §4.2) e notas de limitação atualizadas |
 | 2026-08-22 | Higor Cazuza | Reservas e nomes DNS de `pve1`/`pve2` aplicados e verificados. §4.1 migrada para os três mecanismos reais (estático no host + `config host` + `config domain`). Novo §1.1 (glossário `local`/`domain`/`expandhosts`), novo §7 (nota de mecanismo `dhcp-host` vs. `config domain`, com evidência de log). §6 revisado: critério de `dhcp.leases` substituído por `uci show dhcp`, e critério de reinício corrigido de "reiniciar hipervisor" para "reiniciar o Cudy" |
+
+## Verification
+| 2026-08-30 | Janaína Cazuza |Add independent verification of topology doc
