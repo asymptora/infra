@@ -1,0 +1,50 @@
+---
+# Detection only. This role never applies an upgrade and never reboots a
+# node: both are operator actions performed in a scheduled window per
+# docs/runbooks/proxmox-node-updates.md.
+
+- name: Refresh package metadata
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 0
+
+- name: Collect available upgrades
+  ansible.builtin.command: apt list --upgradable
+  register: proxmox_maintenance_upgradable_packages
+  changed_when: false
+
+- name: Check for a pending reboot
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+  register: proxmox_maintenance_reboot_required_file
+
+- name: Collect running kernel version
+  ansible.builtin.command: uname -r
+  register: proxmox_maintenance_running_kernel
+  changed_when: false
+
+- name: Notify on available upgrades
+  ansible.builtin.uri:
+    url: "{{ proxmox_maintenance_notify_webhook_url }}"
+    method: POST
+    body: >-
+      [{{ inventory_hostname }}] {{ (proxmox_maintenance_upgradable_packages.stdout_lines | length) - 1 }}
+      package(s) available for upgrade. Running kernel {{ proxmox_maintenance_running_kernel.stdout }}.
+    body_format: raw
+    status_code: [200, 201]
+  when:
+    - proxmox_maintenance_notify_webhook_url | length > 0
+    - proxmox_maintenance_upgradable_packages.stdout_lines | length > 1
+
+- name: Notify on pending reboot
+  ansible.builtin.uri:
+    url: "{{ proxmox_maintenance_notify_webhook_url }}"
+    method: POST
+    body: >-
+      [{{ inventory_hostname }}] Reboot pending. Installed kernel differs from
+      running kernel {{ proxmox_maintenance_running_kernel.stdout }}.
+    body_format: raw
+    status_code: [200, 201]
+  when:
+    - proxmox_maintenance_notify_webhook_url | length > 0
+    - proxmox_maintenance_reboot_required_file.stat.exists

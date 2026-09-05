@@ -1,0 +1,27 @@
+# Key material
+*.pem
+*.key
+id_ed25519*
+id_rsa*
+age-keys.txt
+*.asc
+
+# Tunnel credentials
+cloudflared/*credentials.json
+cloudflared/config.yml
+
+# Ansible
+*.retry
+.vault_pass
+
+# SOPS local key material
+.sops/keys/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Editor and OS
+.DS_Store
+*.swp

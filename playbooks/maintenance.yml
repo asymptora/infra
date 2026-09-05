@@ -1,0 +1,8 @@
+---
+# Scheduled by a systemd timer. Detects pending updates and notifies; the
+# upgrade itself is an operator action.
+- name: Detect pending node updates
+  hosts: proxmox_nodes
+  serial: 1
+  roles:
+    - proxmox_maintenance

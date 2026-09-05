@@ -1,0 +1,80 @@
+---
+# Enforces the container conventions from ADR 0002 at creation time:
+# unprivileged, nesting enabled before first boot, key based access with
+# no root password at any point. Runs on the Proxmox host.
+
+- name: Validate required parameters
+  ansible.builtin.assert:
+    that:
+      - lxc_provision_ctid | length > 0
+      - lxc_provision_hostname | length > 0
+      - lxc_provision_ssh_public_key_path | length > 0
+    fail_msg: >-
+      lxc_provision_ctid, lxc_provision_hostname and
+      lxc_provision_ssh_public_key_path are required.
+
+- name: Check whether the CTID already exists
+  ansible.builtin.command: "pct status {{ lxc_provision_ctid }}"
+  register: lxc_provision_pct_status
+  changed_when: false
+  failed_when: false
+
+# nesting is set at creation rather than afterwards: without it, service
+# management inside containers running systemd 259 or newer fails
+# silently, and diagnosing that after the fact costs materially more time.
+- name: Create the container
+  ansible.builtin.command: >
+    pct create {{ lxc_provision_ctid }} {{ lxc_provision_template }}
+    --hostname {{ lxc_provision_hostname }}
+    --cores {{ lxc_provision_cores }}
+    --memory {{ lxc_provision_memory_mb }}
+    --swap {{ lxc_provision_swap_mb }}
+    --rootfs {{ lxc_provision_storage }}:{{ lxc_provision_rootfs_gb }}
+    --unprivileged {{ 1 if lxc_provision_unprivileged else 0 }}
+    --onboot {{ 1 if lxc_provision_onboot else 0 }}
+    --features nesting={{ 1 if lxc_provision_nesting else 0 }}
+    --net0 name=eth0,bridge=vmbr0,ip=dhcp
+  when: lxc_provision_pct_status.rc != 0
+  changed_when: true
+
+- name: Start the container
+  ansible.builtin.command: "pct start {{ lxc_provision_ctid }}"
+  register: lxc_provision_pct_start
+  changed_when: lxc_provision_pct_start.rc == 0
+  failed_when: false
+
+- name: Wait for the container to accept commands
+  ansible.builtin.command: "pct exec {{ lxc_provision_ctid }} -- true"
+  register: lxc_provision_pct_ready
+  until: lxc_provision_pct_ready.rc == 0
+  retries: 10
+  delay: 2
+  changed_when: false
+
+# --ssh-public-keys exists only on pct create. For an existing container
+# the key is pushed from the host, which requires neither container
+# networking nor an interactive session.
+- name: Create the SSH directory
+  ansible.builtin.command: "pct exec {{ lxc_provision_ctid }} -- mkdir -p /root/.ssh"
+  changed_when: true
+
+- name: Install the authorized key
+  ansible.builtin.command: >
+    pct push {{ lxc_provision_ctid }} {{ lxc_provision_ssh_public_key_path }} /root/.ssh/authorized_keys
+  changed_when: true
+
+- name: Set SSH directory permissions
+  ansible.builtin.command: "pct exec {{ lxc_provision_ctid }} -- {{ item }}"
+  loop:
+    - "chmod 700 /root/.ssh"
+    - "chmod 600 /root/.ssh/authorized_keys"
+  changed_when: true
+
+- name: Read back the resulting configuration
+  ansible.builtin.command: "pct config {{ lxc_provision_ctid }}"
+  register: lxc_provision_pct_config
+  changed_when: false
+
+- name: Report configuration
+  ansible.builtin.debug:
+    var: lxc_provision_pct_config.stdout_lines

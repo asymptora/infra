@@ -1,0 +1,12 @@
+---
+# Node placement is an operator decision under the colocation rule in
+# ADR 0006, so the target is always constrained with -l.
+#
+#   ansible-playbook playbooks/provision_lxc.yml -l pve1 \
+#     -e lxc_provision_ctid=105 -e lxc_provision_hostname=ghost \
+#     -e lxc_provision_ssh_public_key_path=~/.ssh/id_ed25519.pub
+- name: Provision an LXC container
+  hosts: proxmox_nodes
+  gather_facts: false
+  roles:
+    - lxc_provision

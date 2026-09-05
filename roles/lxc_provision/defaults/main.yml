@@ -1,0 +1,13 @@
+---
+lxc_provision_ctid: ""
+lxc_provision_hostname: ""
+lxc_provision_template: "hdd-cold:vztmpl/debian-13-standard_13.0-1_amd64.tar.zst"
+lxc_provision_storage: "local-lvm"
+lxc_provision_cores: 1
+lxc_provision_memory_mb: 512
+lxc_provision_swap_mb: 256
+lxc_provision_rootfs_gb: 4
+lxc_provision_unprivileged: true
+lxc_provision_onboot: true
+lxc_provision_nesting: true
+lxc_provision_ssh_public_key_path: ""
