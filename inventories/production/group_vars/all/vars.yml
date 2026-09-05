@@ -1,0 +1,12 @@
+---
+timezone: America/Sao_Paulo
+
+# Unattended upgrades are restricted to security patches. Kernel and
+# pve-manager upgrades are applied manually in a scheduled window, one
+# node at a time. See docs/runbooks/proxmox-node-updates.md.
+unattended_security_only: true
+
+notify_on:
+  - upgrade_available
+  - reboot_required
+  - backup_failed
