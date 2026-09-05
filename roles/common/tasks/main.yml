@@ -1,0 +1,25 @@
+---
+- name: Set timezone
+  community.general.timezone:
+    name: "{{ timezone }}"
+
+- name: Ensure unattended-upgrades is installed
+  ansible.builtin.apt:
+    name: unattended-upgrades
+    state: present
+    update_cache: true
+
+- name: Restrict unattended upgrades to security patches
+  ansible.builtin.copy:
+    dest: /etc/apt/apt.conf.d/51unattended-upgrades-security-only
+    content: |
+      // Managed by Ansible (roles/common).
+      // Kernel and pve-manager are excluded: those upgrades are applied
+      // manually in a scheduled window, one node at a time, because a
+      // node reboot is a service outage under ADR 0006.
+      Unattended-Upgrade::Origins-Pattern {
+          "origin=Debian,codename=${distro_codename},label=Debian-Security";
+      };
+      Unattended-Upgrade::Automatic-Reboot "false";
+    mode: "0644"
+  when: unattended_security_only | default(true)
