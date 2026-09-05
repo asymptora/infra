@@ -15,8 +15,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # Full history: a secret removed in a later commit is still
+          # present in the history a public repository exposes.
           fetch-depth: 0
 
+      # The gitleaks CLI is MIT-licensed and free regardless of account
+      # type. The gitleaks-action wrapper requires a paid license for
+      # organization-owned repositories, so the CLI is run directly
+      # instead, matching the exact command used locally.
       - name: Install gitleaks
         run: |
           curl -sSL -o /tmp/gitleaks.tar.gz \
@@ -38,6 +44,9 @@ jobs:
 
       - name: Install tooling
         run: pip install ansible-core ansible-lint yamllint
+
+      - name: Install Ansible collections
+        run: ansible-galaxy collection install -r requirements.yml
 
       - name: yamllint
         run: yamllint .
