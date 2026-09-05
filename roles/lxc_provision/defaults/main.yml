@@ -1,0 +1,13 @@
+---
+lxc_ctid: ""
+lxc_hostname: ""
+lxc_template: "hdd-cold:vztmpl/debian-13-standard_13.0-1_amd64.tar.zst"
+lxc_storage: "local-lvm"
+lxc_cores: 1
+lxc_memory_mb: 512
+lxc_swap_mb: 256
+lxc_rootfs_gb: 4
+lxc_unprivileged: true
+lxc_onboot: true
+lxc_nesting: true
+lxc_ssh_public_key_path: ""
