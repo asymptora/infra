@@ -1,0 +1,5 @@
+---
+- name: Node baseline
+  hosts: proxmox_nodes
+  roles:
+    - common
