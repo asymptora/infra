@@ -10,41 +10,41 @@
 
 - name: Collect available upgrades
   ansible.builtin.command: apt list --upgradable
-  register: upgradable_packages
+  register: proxmox_maintenance_upgradable_packages
   changed_when: false
 
 - name: Check for a pending reboot
   ansible.builtin.stat:
     path: /var/run/reboot-required
-  register: reboot_required_file
+  register: proxmox_maintenance_reboot_required_file
 
 - name: Collect running kernel version
   ansible.builtin.command: uname -r
-  register: running_kernel
+  register: proxmox_maintenance_running_kernel
   changed_when: false
 
 - name: Notify on available upgrades
   ansible.builtin.uri:
-    url: "{{ notify_webhook_url }}"
+    url: "{{ proxmox_maintenance_notify_webhook_url }}"
     method: POST
     body: >-
-      [{{ inventory_hostname }}] {{ (upgradable_packages.stdout_lines | length) - 1 }}
-      package(s) available for upgrade. Running kernel {{ running_kernel.stdout }}.
+      [{{ inventory_hostname }}] {{ (proxmox_maintenance_upgradable_packages.stdout_lines | length) - 1 }}
+      package(s) available for upgrade. Running kernel {{ proxmox_maintenance_running_kernel.stdout }}.
     body_format: raw
     status_code: [200, 201]
   when:
-    - notify_webhook_url | length > 0
-    - upgradable_packages.stdout_lines | length > 1
+    - proxmox_maintenance_notify_webhook_url | length > 0
+    - proxmox_maintenance_upgradable_packages.stdout_lines | length > 1
 
 - name: Notify on pending reboot
   ansible.builtin.uri:
-    url: "{{ notify_webhook_url }}"
+    url: "{{ proxmox_maintenance_notify_webhook_url }}"
     method: POST
     body: >-
       [{{ inventory_hostname }}] Reboot pending. Installed kernel differs from
-      running kernel {{ running_kernel.stdout }}.
+      running kernel {{ proxmox_maintenance_running_kernel.stdout }}.
     body_format: raw
     status_code: [200, 201]
   when:
-    - notify_webhook_url | length > 0
-    - reboot_required_file.stat.exists
+    - proxmox_maintenance_notify_webhook_url | length > 0
+    - proxmox_maintenance_reboot_required_file.stat.exists

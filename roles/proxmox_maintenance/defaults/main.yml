@@ -1,2 +1,2 @@
 ---
-notify_webhook_url: ""
+proxmox_maintenance_notify_webhook_url: ""

@@ -62,8 +62,8 @@ scripts/                  Workstation bootstrap
 ansible-playbook playbooks/site.yml           # node baseline
 ansible-playbook playbooks/maintenance.yml    # detect pending updates
 ansible-playbook playbooks/provision_lxc.yml -l pve1 \
-  -e lxc_ctid=105 -e lxc_hostname=<name> \
-  -e lxc_ssh_public_key_path=~/.ssh/id_ed25519.pub
+  -e lxc_provision_ctid=105 -e lxc_provision_hostname=<name> \
+  -e lxc_provision_ssh_public_key_path=~/.ssh/id_ed25519.pub
 ```
 
 ## Architecture decisions
