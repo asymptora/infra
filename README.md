@@ -1,6 +1,6 @@
 # asymptora-infra
 
-Infrastructure as code for the Asymptora lab: two Proxmox VE 9.2 nodes,
+Infrastructure as code for the Asymptora lab: two Proxmox VE nodes,
 LXC workloads, and a segmented home network on OpenWrt.
 
 ## System overview
@@ -11,17 +11,17 @@ LXC workloads, and a segmented home network on OpenWrt.
               ZTE ZXHN F6645P (ONT, bridge mode)
                             |
                     [ WAN 1 GbE ]
-              Cudy WR3000 . OpenWrt 25.12.5
+                  Cudy WR3000 . OpenWrt
               routing, firewall, DHCP, DNS
                             |
         +-------------------+-------------------+
      br-lan              br-iot             br-familia
-  192.168.1.0/24     192.168.20.0/24     192.168.30.0/24
+ (infra & workstations)   (IoT devices)     (personal devices)
         |
    pve1     pve2
     |         |
   vmbr0     vmbr0
-10.10.10.0/24  10.10.20.0/24
+   (isolated /24 per node, NAT egress, see ADR 0003)
     |         |
    LXC       LXC
 ```

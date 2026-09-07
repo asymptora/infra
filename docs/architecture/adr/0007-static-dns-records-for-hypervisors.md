@@ -22,7 +22,7 @@ That hypothesis was refuted by isolated test rather than by argument. With
 while keeping only `config host`, and dnsmasq was restarted:
 
 ```
-dig @192.168.1.1 pve1.lan +short
+dig @<router> pve1.lan +short
 ```
 
 Result: `NXDOMAIN`. The log recorded the response source with the `config`
