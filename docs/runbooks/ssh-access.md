@@ -6,11 +6,13 @@ the tmux workflow for long running remote sessions.
 ## Access model
 
 - Authentication is by SSH key only, ed25519, no passwords, anywhere, for anyone.
-- Daily operations run as `cazuza` with `sudo`. `root` over SSH exists only for
+- More than one operator holds access to both nodes, each under their own
+  account and their own key, per ADR 0001. Daily operations run as the
+  operator's own account with `sudo`. `root` over SSH exists only for
   emergencies and is never reachable by password.
-- Host aliases live in `~/.ssh/config` on the operator's workstation, versioned in
-  a personal dotfiles repository, never in this one. No private key or host detail
-  that counts as a secret goes into `infra`.
+- Host aliases live in `~/.ssh/config` on each operator's workstation, versioned
+  in a personal dotfiles repository, never in this one. No private key,
+  username, or host detail that counts as a secret goes into `infra`.
 
 ## Hardening state (both nodes)
 
@@ -25,8 +27,9 @@ effective config: same policy, different label.
 
 Password authentication was disabled first. `PermitRootLogin` was tightened from
 `yes` to `prohibit-password` afterward, once ordinary operation was confirmed to
-never need `root` over SSH: `cazuza` with `sudo` covers every day to day case, so
-`root` was narrowed to key only, emergency only, rather than removed outright.
+never need `root` over SSH: an operator's own account with `sudo` covers every
+day to day case, so `root` was narrowed to key only, emergency only, rather
+than removed outright.
 
 ## Applying an sshd_config change safely
 
@@ -113,4 +116,4 @@ same location, so the trade-off is accepted.
 
 ## References
 
-- ADR 0001: single operator ownership of the lab infrastructure
+- ADR 0001: ownership and operational access model

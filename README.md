@@ -74,7 +74,7 @@ infrastructure or as code in this repository.
 
 | ADR | Decision |
 |---|---|
-| [0001](docs/architecture/adr/0001-single-operator-ownership.md) | Single operator ownership of the lab infrastructure |
+| [0001](docs/architecture/adr/0001-single-operator-ownership.md) | Ownership and operational access model |
 | [0002](docs/architecture/adr/0002-lxc-as-default-workload-unit.md) | LXC as the default workload unit |
 | [0003](docs/architecture/adr/0003-layer-3-nat-for-container-traffic.md) | Layer 3 NAT for container traffic |
 | [0004](docs/architecture/adr/0004-dedicated-bridges-over-vlan-tagging.md) | Dedicated bridges instead of 802.1Q VLAN tagging |
