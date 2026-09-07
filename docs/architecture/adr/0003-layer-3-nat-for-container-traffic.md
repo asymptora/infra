@@ -46,8 +46,7 @@ association.
 
 The wireless interface is not bridged. `nic1` keeps its own IP address and
 routes. `vmbr0` is an internal, isolated bridge (`bridge-ports none`) on a
-distinct private range per node (`10.10.10.0/24` on `pve1`,
-`10.10.20.0/24` on `pve2`). Container egress is translated with
+distinct RFC1918 /24 per node. Container egress is translated with
 MASQUERADE.
 
 Distinct ranges per node are deliberate: they prevent address collision if

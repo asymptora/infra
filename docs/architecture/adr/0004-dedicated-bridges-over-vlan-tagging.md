@@ -38,11 +38,11 @@ itself, which already maintains separate forwarding tables per bridge.
 Three broadcast domains implemented as separate Linux bridges, not as
 802.1Q VLANs:
 
-| Bridge | Network | Purpose |
-|---|---|---|
-| `br-lan` | 192.168.1.0/24 | Infrastructure and workstations |
-| `br-iot` | 192.168.20.0/24 | IoT devices |
-| `br-familia` | 192.168.30.0/24 | Personal devices |
+| Bridge | Purpose |
+|---|---|
+| `br-lan` | Infrastructure and workstations |
+| `br-iot` | IoT devices |
+| `br-familia` | Personal devices |
 
 Firewall forwarding policy is default deny. Only `lan` to `wan`, `iot` to
 `wan`, `familia` to `wan`, and `wireguard` to `lan` are permitted. No
