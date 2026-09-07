@@ -1,7 +1,7 @@
 # Runbook: SSH access to the Proxmox nodes
 
-**Scope:** key based SSH access to `pve1` and `pve2`, current hardening state, and
-the tmux workflow for long running remote sessions.
+**Scope:** key based SSH access to `pve1` and `pve2` and the current
+hardening state.
 
 ## Access model
 
@@ -71,40 +71,6 @@ The client is forced to offer only password authentication, key auth explicitly
 disabled through flags, and the server refuses before ever reaching a password
 prompt. That is the proof the policy is enforced server side, not just written
 down.
-
-## tmux for long running remote work
-
-Any SSH session can die mid work: a network hiccup, a sleeping laptop, a terminal
-closed by reflex. Whatever runs in the foreground of that session dies with it,
-since it is a child process of the SSH session, and when the parent dies `sshd`
-sends it `SIGHUP`. `tmux` breaks that dependency by keeping the session alive on
-the server as a child of the `tmux` server process, independent of whichever SSH
-connection is currently attached to it.
-
-| Action | Command |
-|---|---|
-| Create a named session | `tmux new -s <name>` |
-| Detach, leave it running | `Ctrl+b`, then `d` |
-| Reattach | `tmux attach -t <name>` |
-| New window in current session | `Ctrl+b c` |
-| Switch window | `Ctrl+b n` / `Ctrl+b p` / `Ctrl+b <number>` |
-| List running sessions | `tmux ls` |
-
-## File transfer: rsync vs scp
-
-`scp` copies unconditionally: source to destination, every byte, every time,
-regardless of whether the destination already holds an identical copy. Fine for a
-one off single file. `rsync` compares source and destination first (size and mtime
-by default, checksum with `-c`) and transfers only what changed. For anything
-repeated, `rsync -av` is the standard; `scp` stays reserved for a single one off
-copy where the delta does not matter.
-
-## Editor availability
-
-`vim` is not installed by default on either node; Proxmox's minimal Debian base
-does not ship it. `vi`, the ancestor `vim` is built on, is a POSIX mandated
-utility present on both nodes (`which vi` resolves on both). Do not assume `vim`
-on a server outside your control; assume `vi`.
 
 ## Emergency access
 
