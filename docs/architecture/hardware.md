@@ -16,7 +16,7 @@ of scope; they are not Asymptora infrastructure.
 | Disk 2 | 1TB SATA HDD, 5400 RPM |
 | Wireless | WiFi 5 (802.11ac), 1x1 antenna |
 | Wired | Fast Ethernet RJ45, 10/100 Mbps ceiling, not Gigabit |
-| OS | Proxmox VE 9.2 |
+| OS | Proxmox VE |
 | Role | Primary node, decisions in `docs/architecture/adr/` |
 
 ## pve2
@@ -31,7 +31,7 @@ of scope; they are not Asymptora infrastructure.
 | M.2 slot | Available, unused. Structural difference from pve1, which already occupies its M.2 slot with an SSD |
 | Wireless | WiFi 5 (802.11ac), 1x1 antenna |
 | Wired | Fast Ethernet RJ45, 10/100 Mbps ceiling, not Gigabit |
-| OS | Proxmox VE 9.2 |
+| OS | Proxmox VE |
 | Role | Support node. No low latency storage tier, role defined in ADR 0006 |
 
 **Future expansion note:** the empty M.2 slot on pve2 is the natural path if that
