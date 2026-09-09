@@ -66,6 +66,15 @@ ansible-playbook playbooks/provision_lxc.yml -l pve1 \
   -e lxc_provision_ssh_public_key_path=~/.ssh/id_ed25519.pub
 ```
 
+## Planning
+
+Work that changes production state starts as an RFC in `docs/rfcs/`, tracked
+through GitHub Milestones and Issues, not as an untracked local change.
+
+| RFC | Plan |
+|---|---|
+| [0001](docs/rfcs/0001-platform-commissioning.md) | Commissioning the platform for public workloads |
+
 ## Architecture decisions
 
 Records are added as decisions are made and implemented, not in advance.
