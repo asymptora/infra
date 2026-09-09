@@ -1,7 +1,13 @@
 # asymptora-infra
 
+[![ci](https://github.com/asymptora/infra/actions/workflows/ci.yml/badge.svg)](https://github.com/asymptora/infra/actions/workflows/ci.yml)
+
 Infrastructure as code for the Asymptora lab: two Proxmox VE nodes,
 LXC workloads, and a segmented home network on OpenWrt.
+
+No service is currently published from this infrastructure. Commissioning
+work toward the first one is tracked in
+[RFC 0001](docs/rfcs/0001-platform-commissioning.md).
 
 ## System overview
 
@@ -29,7 +35,7 @@ LXC workloads, and a segmented home network on OpenWrt.
 | Node | Role | Storage | Workloads |
 |---|---|---|---|
 | `pve1` | Primary | 240 GB SSD (hot) + 1 TB HDD (cold) | Latency sensitive services, containers serving traffic |
-| `pve2` | Support | 1 TB HDD | CI runner, observability, backup target |
+| `pve2` | Support | 1 TB HDD | Backup target |
 
 Both hypervisors reach the network over 802.11ac in client mode. That
 constraint drives most of the topology decisions recorded in
@@ -42,6 +48,7 @@ Measured baseline (2026-08-29): 130 Mbit/s sustained between nodes,
 
 ```
 docs/architecture/adr/    Architecture decision records
+docs/rfcs/                Design proposals that precede ADRs
 docs/runbooks/            Operational procedures
 inventories/production/   Ansible inventory and variables
 playbooks/                Entry point playbooks
@@ -96,3 +103,7 @@ infrastructure or as code in this repository.
 
 Secret material is never committed in plain text. See
 [`SECURITY.md`](SECURITY.md).
+
+## License
+
+MIT. See [`LICENSE`](LICENSE).
