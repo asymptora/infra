@@ -63,16 +63,17 @@ it physically.
 Chose NFS over CIFS and Proxmox Backup Server. NFS is the standard
 mechanism for Linux-to-Linux file sharing, carries lower protocol overhead
 than CIFS, and needs no separate user or credential management, only
-IP-based access control, which fits the network segmentation already in
-place. CIFS exists primarily for interoperability with Windows, which is
-not a factor between these two nodes. Proxmox Backup Server was not
+address-based access control, which fits the network segmentation already
+in place. CIFS exists primarily for interoperability with Windows, which
+is not a factor between these two nodes. Proxmox Backup Server was not
 adopted at this stage to keep the mechanism simple and directly
 inspectable, consistent with the platform's current scale.
 
-The export on `pve2` is restricted to `pve1`'s address only:
+The export on `pve2` is restricted to `pve1`'s address only, with the
+options required for vzdump to write as root:
 
 ```
-/mnt/backup-storage 192.168.1.10(rw,sync,no_subtree_check,no_root_squash)
+/mnt/backup-storage <pve1-address>(rw,sync,no_subtree_check,no_root_squash)
 ```
 
 `no_root_squash` is required because vzdump runs as root on `pve1`; the
@@ -92,6 +93,10 @@ storage should not offer itself as a destination for ISOs, templates, or
 VM disks through the web interface, structurally rather than by operator
 discipline. Retention is enforced at the storage level, keeping the last
 five backups per guest.
+
+Addresses are omitted from this record in line with this repository's
+convention of not committing literal IPs in plain text; the live
+configuration on both nodes is the source of truth for the exact values.
 
 ## Consequences
 
