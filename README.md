@@ -1,6 +1,9 @@
 # asymptora-infra
 
 [![ci](https://github.com/asymptora/infra/actions/workflows/ci.yml/badge.svg)](https://github.com/asymptora/infra/actions/workflows/ci.yml)
+[![issues](https://img.shields.io/github/issues/asymptora/infra)](https://github.com/asymptora/infra/issues)
+[![license](https://img.shields.io/github/license/asymptora/infra)](LICENSE)
+
 
 Infrastructure as code for the Asymptora lab: two Proxmox VE nodes,
 LXC workloads, and a segmented home network on OpenWrt.
