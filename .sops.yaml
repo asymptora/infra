@@ -1,0 +1,7 @@
+---
+creation_rules:
+  - path_regex: inventories/production/secrets\.sops\.yml$
+    key_groups:
+      - age:
+          - age1cwha3mlqn8zcdkvva3ygzs93fh4jy75wd8rpvvzlg2mrd0se9g4sm9cleu
+          - age15vflgskuqnqnftt3v0p55cs5e39c9z88u6eyfq6lef67wz4mzdeqpj35kg
