@@ -1,0 +1,8 @@
+---
+# secrets.sops.yml is owned by sops: its structure and line lengths come
+# from AES-GCM ciphertext and MAC values, rewritten wholesale on every
+# encrypt, edit, or key rotation. Style rules for hand-authored YAML do
+# not apply to generated ciphertext, so the file is excluded rather than
+# reformatted.
+exclude_paths:
+  - inventories/production/secrets.sops.yml
