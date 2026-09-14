@@ -1,0 +1,13 @@
+---
+- name: Declare the backup infrastructure
+  hosts: proxmox_nodes
+  gather_facts: true
+  tasks:
+    - name: Load the encrypted notification topic
+      community.sops.load_vars:
+        file: "{{ playbook_dir }}/../inventories/production/secrets.sops.yml"
+      no_log: true
+
+    - name: Apply the backup infrastructure role
+      ansible.builtin.include_role:
+        name: backup_infra

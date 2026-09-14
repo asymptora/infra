@@ -1,0 +1,22 @@
+---
+- name: Ensure the NFS server package is installed
+  ansible.builtin.apt:
+    name: nfs-kernel-server
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Declare the export, restricted to the backup client
+  ansible.builtin.template:
+    src: exports.j2
+    dest: /etc/exports
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload NFS exports
+
+- name: Ensure the NFS server is running and enabled
+  ansible.builtin.systemd_service:
+    name: nfs-kernel-server
+    state: started
+    enabled: true

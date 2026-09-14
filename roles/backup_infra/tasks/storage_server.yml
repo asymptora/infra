@@ -1,0 +1,28 @@
+---
+- name: Ensure the backup thin volume exists
+  community.general.lvol:
+    vg: "{{ backup_infra_vg }}"
+    thinpool: "{{ backup_infra_thinpool }}"
+    lv: "{{ backup_infra_lv_name }}"
+    size: "{{ backup_infra_lv_size }}"
+    state: present
+    # Never shrink. The volume holds backup archives, and a smaller size
+    # value in code must not silently truncate a volume already in use.
+    shrink: false
+
+- name: Ensure the volume carries an ext4 filesystem
+  community.general.filesystem:
+    dev: "/dev/{{ backup_infra_vg }}/{{ backup_infra_lv_name }}"
+    fstype: ext4
+    # force is false by default and must stay that way: forcing would
+    # reformat a volume that already holds backups.
+    force: false
+
+- name: Ensure the backup volume is mounted and persisted in fstab
+  ansible.posix.mount:
+    path: "{{ backup_infra_server_mount_path }}"
+    src: "/dev/{{ backup_infra_vg }}/{{ backup_infra_lv_name }}"
+    fstype: ext4
+    opts: defaults
+    passno: "2"
+    state: mounted

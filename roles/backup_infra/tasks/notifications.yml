@@ -1,0 +1,50 @@
+---
+# No module covers the Proxmox notification API (endpoints and matchers were
+# introduced in PVE 8.1), so these run through pvesh with existence checks.
+# The two nodes are not clustered (ADR 0006), so notifications.cfg is not
+# shared and each node needs its own copy.
+
+- name: Read the existing notification endpoints
+  ansible.builtin.command:
+    cmd: pvesh get /cluster/notifications/endpoints/webhook --output-format json
+  register: backup_infra_notification_endpoints_raw
+  changed_when: false
+  check_mode: false
+
+- name: Create the webhook notification endpoint
+  ansible.builtin.command:
+    cmd: >-
+      pvesh create /cluster/notifications/endpoints/webhook
+      --name {{ backup_infra_notification_endpoint }}
+      --url 'https://ntfy.sh/{{ ntfy_topic }}'
+      --method post
+      --body '{{ backup_infra_notification_body | b64encode }}'
+  # The body field is stored base64 encoded. The web interface encodes it
+  # transparently; pvesh does not, and rejects a plain text value at test
+  # time with a base64 decode error.
+  when: >-
+    backup_infra_notification_endpoint not in
+    (backup_infra_notification_endpoints_raw.stdout | from_json | map(attribute='name') | list)
+  changed_when: true
+  no_log: true
+
+- name: Read the existing notification matchers
+  ansible.builtin.command:
+    cmd: pvesh get /cluster/notifications/matchers --output-format json
+  register: backup_infra_notification_matchers_raw
+  changed_when: false
+  check_mode: false
+
+- name: Create the matcher routing backup failures to the endpoint
+  ansible.builtin.command:
+    cmd: >-
+      pvesh create /cluster/notifications/matchers
+      --name {{ backup_infra_notification_matcher }}
+      --match-field 'exact:type=vzdump'
+      --match-severity error
+      --target {{ backup_infra_notification_endpoint }}
+      --comment 'Route vzdump backup failures to ntfy'
+  when: >-
+    backup_infra_notification_matcher not in
+    (backup_infra_notification_matchers_raw.stdout | from_json | map(attribute='name') | list)
+  changed_when: true

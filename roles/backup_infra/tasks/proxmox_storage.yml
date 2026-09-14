@@ -1,0 +1,23 @@
+---
+# community.proxmox.proxmox_storage was considered and not used: it talks to
+# the Proxmox REST API and would require an API token, a new secret, while
+# this role already holds privileged local access over SSH. pvesm is the
+# same interface used by hand, with no extra credential to manage.
+
+- name: Check whether the Proxmox storage entry already exists
+  ansible.builtin.command:
+    cmd: "pvesm status --storage {{ backup_infra_storage_id }}"
+  register: backup_infra_storage_check
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Register the Proxmox storage entry
+  ansible.builtin.command:
+    cmd: >-
+      pvesm add dir {{ backup_infra_storage_id }}
+      --path {{ backup_infra_client_mount_path }}
+      --content backup
+      --prune-backups {{ backup_infra_retention }}
+  when: backup_infra_storage_check.rc != 0
+  changed_when: true

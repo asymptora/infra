@@ -1,0 +1,32 @@
+---
+# Node roles. Compared against inventory_hostname to decide which half of
+# this role applies to the host being configured.
+backup_infra_storage_host: pve2
+backup_infra_client_host: pve1
+
+# Storage layout on the backup host. See ADR 0009 for why the volume is a
+# thin LV inside the existing pool rather than raw VG space.
+backup_infra_vg: pve
+backup_infra_thinpool: data
+backup_infra_lv_name: backup
+backup_infra_lv_size: 400g
+backup_infra_server_mount_path: /mnt/backup-storage
+
+# Where the client mounts the export.
+backup_infra_client_mount_path: /mnt/pve2-backup
+
+# Proxmox storage entry created on the client.
+backup_infra_storage_id: pve2-backup
+backup_infra_retention: keep-last=5
+
+# Scheduled job. Schedule uses systemd calendar syntax.
+backup_infra_job_id: backup-all-nightly
+backup_infra_job_schedule: "*-*-* 03:00:00"
+backup_infra_job_mode: snapshot
+backup_infra_job_compress: zstd
+
+# Notification target and matcher. ntfy_topic is decrypted from
+# secrets.sops.yml by the playbook, never defined here.
+backup_infra_notification_endpoint: ntfy-backup
+backup_infra_notification_matcher: backup-failures
+backup_infra_notification_body: "{{ '{{title}}: {{message}}' }}"

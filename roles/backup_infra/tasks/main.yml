@@ -1,0 +1,29 @@
+---
+# Every task in this role runs against nodes that already carry this
+# configuration, applied by hand before it was codified. Nothing here may
+# create blindly: the backup volume holds real data, so a naive create or
+# reformat is data loss, not convergence.
+
+- name: Configure the backup storage host
+  when: inventory_hostname == backup_infra_storage_host
+  block:
+    - name: Provision the backup volume
+      ansible.builtin.include_tasks: storage_server.yml
+
+    - name: Export the backup volume over NFS
+      ansible.builtin.include_tasks: nfs_server.yml
+
+- name: Configure the backup client host
+  when: inventory_hostname == backup_infra_client_host
+  block:
+    - name: Mount the NFS export
+      ansible.builtin.include_tasks: nfs_client.yml
+
+    - name: Register the Proxmox storage entry
+      ansible.builtin.include_tasks: proxmox_storage.yml
+
+    - name: Create the scheduled backup job
+      ansible.builtin.include_tasks: backup_job.yml
+
+- name: Configure notification target and matcher
+  ansible.builtin.include_tasks: notifications.yml
