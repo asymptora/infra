@@ -7,7 +7,7 @@
 - name: Read the existing notification endpoints
   ansible.builtin.command:
     cmd: pvesh get /cluster/notifications/endpoints/webhook --output-format json
-  register: notification_endpoints_raw
+  register: backup_infra_notification_endpoints_raw
   changed_when: false
   check_mode: false
 
@@ -15,23 +15,23 @@
   ansible.builtin.command:
     cmd: >-
       pvesh create /cluster/notifications/endpoints/webhook
-      --name {{ backup_notification_endpoint }}
+      --name {{ backup_infra_notification_endpoint }}
       --url 'https://ntfy.sh/{{ ntfy_topic }}'
       --method post
-      --body '{{ backup_notification_body | b64encode }}'
+      --body '{{ backup_infra_notification_body | b64encode }}'
   # The body field is stored base64 encoded. The web interface encodes it
   # transparently; pvesh does not, and rejects a plain text value at test
   # time with a base64 decode error.
   when: >-
-    backup_notification_endpoint not in
-    (notification_endpoints_raw.stdout | from_json | map(attribute='name') | list)
+    backup_infra_notification_endpoint not in
+    (backup_infra_notification_endpoints_raw.stdout | from_json | map(attribute='name') | list)
   changed_when: true
   no_log: true
 
 - name: Read the existing notification matchers
   ansible.builtin.command:
     cmd: pvesh get /cluster/notifications/matchers --output-format json
-  register: notification_matchers_raw
+  register: backup_infra_notification_matchers_raw
   changed_when: false
   check_mode: false
 
@@ -39,12 +39,12 @@
   ansible.builtin.command:
     cmd: >-
       pvesh create /cluster/notifications/matchers
-      --name {{ backup_notification_matcher }}
+      --name {{ backup_infra_notification_matcher }}
       --match-field 'exact:type=vzdump'
       --match-severity error
-      --target {{ backup_notification_endpoint }}
+      --target {{ backup_infra_notification_endpoint }}
       --comment 'Route vzdump backup failures to ntfy'
   when: >-
-    backup_notification_matcher not in
-    (notification_matchers_raw.stdout | from_json | map(attribute='name') | list)
+    backup_infra_notification_matcher not in
+    (backup_infra_notification_matchers_raw.stdout | from_json | map(attribute='name') | list)
   changed_when: true

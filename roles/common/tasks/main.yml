@@ -23,3 +23,26 @@
       Unattended-Upgrade::Automatic-Reboot "false";
     mode: "0644"
   when: unattended_security_only | default(true)
+
+# Discovered while testing roles/backup_infra: both nodes shipped with
+# /etc/resolv.conf pointing at a public resolver. That answers
+# for the internet fine, but the .lan zone is only authoritative on the
+# router (ADR 0007), so node-to-node lookups of pve1.lan/pve2.lan returned
+# NXDOMAIN instead of forwarding. This surfaced as an NFS mount failure,
+# not a DNS error, which cost real time to trace back.
+#
+# The router's address is read from the gateway each node already has in
+# its own network config (ansible_default_ipv4.gateway), rather than
+# written here as a literal, per this repository's rule against
+# committing IP addresses in plain text.
+- name: Ensure the node resolves internal DNS through the router
+  ansible.builtin.copy:
+    dest: /etc/resolv.conf
+    content: |
+      # Managed by Ansible (roles/common).
+      # The router is authoritative for the .lan zone (ADR 0007) and
+      # forwards everything else. A public resolver here returns
+      # NXDOMAIN for internal names instead of forwarding to the router.
+      search asymptora.local
+      nameserver {{ ansible_facts['default_ipv4']['gateway'] }}
+    mode: "0644"

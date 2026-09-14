@@ -8,8 +8,8 @@
 
 - name: Ensure the export is mounted and persisted in fstab
   ansible.posix.mount:
-    path: "{{ backup_client_mount_path }}"
-    src: "{{ hostvars[backup_storage_host].ansible_host }}:{{ backup_server_mount_path }}"
+    path: "{{ backup_infra_client_mount_path }}"
+    src: "{{ hostvars[backup_infra_storage_host].ansible_host }}:{{ backup_infra_server_mount_path }}"
     fstype: nfs
     # _netdev tells systemd this mount depends on the network, so boot does
     # not race the interface coming up. A local disk mount does not need it.

@@ -6,21 +6,18 @@
 
 - name: Check whether the Proxmox storage entry already exists
   ansible.builtin.command:
-    cmd: "pvesm status --storage {{ backup_storage_id }}"
-  register: backup_storage_check
+    cmd: "pvesm status --storage {{ backup_infra_storage_id }}"
+  register: backup_infra_storage_check
   changed_when: false
   failed_when: false
-  # Read-only check. Ansible skips command tasks under --check by default;
-  # this one is safe to always run so the following 'when' has real data
-  # instead of an empty, unregistered result.
   check_mode: false
 
 - name: Register the Proxmox storage entry
   ansible.builtin.command:
     cmd: >-
-      pvesm add dir {{ backup_storage_id }}
-      --path {{ backup_client_mount_path }}
+      pvesm add dir {{ backup_infra_storage_id }}
+      --path {{ backup_infra_client_mount_path }}
       --content backup
-      --prune-backups {{ backup_retention }}
-  when: backup_storage_check.rc != 0
+      --prune-backups {{ backup_infra_retention }}
+  when: backup_infra_storage_check.rc != 0
   changed_when: true
