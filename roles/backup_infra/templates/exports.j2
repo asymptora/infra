@@ -1,0 +1,6 @@
+# Managed by Ansible. Manual edits are overwritten on the next run.
+#
+# no_root_squash is required because vzdump runs as root on the client. The
+# NFS default remaps root to an unprivileged user, which makes every backup
+# write fail. The export is restricted to the backup client only.
+{{ backup_server_mount_path }} {{ hostvars[backup_client_host].ansible_host }}(rw,sync,no_subtree_check,no_root_squash)

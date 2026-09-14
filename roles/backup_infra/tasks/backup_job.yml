@@ -1,0 +1,30 @@
+---
+# community.proxmox.proxmox_backup_schedule only adds or removes a VMID
+# inside a backup job that already exists. It cannot create the job itself,
+# so the job is created through pvesh, guarded by an existence check.
+
+- name: Read the existing backup jobs
+  ansible.builtin.command:
+    cmd: pvesh get /cluster/backup --output-format json
+  register: backup_jobs_raw
+  changed_when: false
+  # Read-only. Must run even under --check, or the 'when' below has no
+  # data to parse.
+  check_mode: false
+
+- name: Create the scheduled backup job
+  ansible.builtin.command:
+    cmd: >-
+      pvesh create /cluster/backup
+      --id {{ backup_job_id }}
+      --schedule '{{ backup_job_schedule }}'
+      --all 1
+      --node {{ inventory_hostname }}
+      --storage {{ backup_storage_id }}
+      --mode {{ backup_job_mode }}
+      --compress {{ backup_job_compress }}
+      --notification-mode notification-system
+      --prune-backups {{ backup_retention }}
+      --comment 'Nightly backup of all guests to {{ backup_storage_id }}'
+  when: backup_job_id not in (backup_jobs_raw.stdout | from_json | map(attribute='id') | list)
+  changed_when: true
