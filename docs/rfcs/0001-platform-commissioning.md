@@ -1,6 +1,6 @@
 # RFC 0001: Commissioning the platform for public workloads
 
-Status: Draft
+Status: Accepted
 
 Author: Higor Cazuza
 
