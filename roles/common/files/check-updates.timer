@@ -1,0 +1,9 @@
+[Unit]
+Description=Run check-updates.service on the first Sunday of each month
+
+[Timer]
+OnCalendar=Sun *-*-1..7 04:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

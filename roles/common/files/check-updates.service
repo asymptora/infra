@@ -1,0 +1,6 @@
+[Unit]
+Description=Check for pending updates and reboot, notify via ntfy
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/check-updates.sh
