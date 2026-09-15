@@ -1,0 +1,24 @@
+---
+# Container identity and sizing. cloudflared is a single lightweight
+# daemon, so the defaults are deliberately small.
+tunnel_ingress_ctid: "110"
+tunnel_ingress_hostname: ingress
+tunnel_ingress_template: "hdd-cold:vztmpl/debian-13-standard_13.6-1_amd64.tar.zst"
+tunnel_ingress_storage: local-lvm
+tunnel_ingress_cores: 1
+tunnel_ingress_memory_mb: 512
+tunnel_ingress_swap_mb: 512
+tunnel_ingress_rootfs_gb: 4
+
+# vmbr0 on pve1 is an isolated NAT bridge with no DHCP server, so a
+# static address is required.
+tunnel_ingress_ip: "10.10.10.10/24"
+tunnel_ingress_gateway: "10.10.10.1"
+
+# Cloudflare has not published a trixie (Debian 13) repo as of this
+# writing; bookworm packages install and run fine on trixie for a single
+# static Go binary like cloudflared. Revisit once Cloudflare adds trixie.
+tunnel_ingress_cloudflare_apt_codename: bookworm
+
+# Host where the container is provisioned.
+tunnel_ingress_proxmox_host: pve1

@@ -1,0 +1,108 @@
+---
+# This role only runs meaningfully once the tunnel already exists on the
+# Cloudflare side. Creating a tunnel is a one time action performed by an
+# operator in the Cloudflare dashboard (Zero Trust > Networks > Tunnels),
+# which issues a token. That token is stored as encrypted secret material
+# (cloudflare_tunnel_token, in inventories/production/secrets.sops.yml)
+# before this role is run. Nothing here creates the tunnel itself: doing
+# that from code would require a separate Cloudflare API token, a new
+# credential this project does not otherwise need.
+
+- name: Fail clearly if the tunnel token is missing
+  ansible.builtin.assert:
+    that:
+      - cloudflare_tunnel_token is defined
+      - cloudflare_tunnel_token | length > 0
+    fail_msg: >-
+      cloudflare_tunnel_token is not set. Create the tunnel in the
+      Cloudflare dashboard first, then store the resulting token in
+      inventories/production/secrets.sops.yml before running this role.
+
+- name: Provision the ingress container
+  ansible.builtin.include_role:
+    name: lxc_provision
+  vars:
+    lxc_provision_ctid: "{{ tunnel_ingress_ctid }}"
+    lxc_provision_hostname: "{{ tunnel_ingress_hostname }}"
+    lxc_provision_template: "{{ tunnel_ingress_template }}"
+    lxc_provision_storage: "{{ tunnel_ingress_storage }}"
+    lxc_provision_cores: "{{ tunnel_ingress_cores }}"
+    lxc_provision_memory_mb: "{{ tunnel_ingress_memory_mb }}"
+    lxc_provision_swap_mb: "{{ tunnel_ingress_swap_mb }}"
+    lxc_provision_rootfs_gb: "{{ tunnel_ingress_rootfs_gb }}"
+    lxc_provision_ssh_public_key_path: "{{ lookup('env', 'HOME') }}/.ssh/id_ed25519.pub"
+    lxc_provision_ip: "{{ tunnel_ingress_ip }}"
+    lxc_provision_gateway: "{{ tunnel_ingress_gateway }}"
+  when: inventory_hostname == tunnel_ingress_proxmox_host
+
+- name: Configure cloudflared inside the container
+  when: inventory_hostname == tunnel_ingress_proxmox_host
+  block:
+    - name: Check whether cloudflared is already installed
+      ansible.builtin.command:
+        cmd: "pct exec {{ tunnel_ingress_ctid }} -- which cloudflared"
+      register: tunnel_ingress_cloudflared_present
+      changed_when: false
+      failed_when: false
+      check_mode: false
+
+    # The minimal template image does not include curl, gnupg, or CA
+    # certificates. All three are needed before the GPG key can be
+    # fetched over HTTPS.
+    - name: Install prerequisites for adding the Cloudflare repository
+      ansible.builtin.command:
+        cmd: >-
+          pct exec {{ tunnel_ingress_ctid }} --
+          bash -c "apt-get update && apt-get install -y curl ca-certificates gnupg"
+      when: tunnel_ingress_cloudflared_present.rc != 0
+      changed_when: true
+
+    - name: Add the Cloudflare package signing key
+      ansible.builtin.command:
+        cmd: >-
+          pct exec {{ tunnel_ingress_ctid }} --
+          bash -c "curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg
+          -o /usr/share/keyrings/cloudflare-main.gpg"
+      when: tunnel_ingress_cloudflared_present.rc != 0
+      changed_when: true
+
+    - name: Add the Cloudflare apt repository
+      ansible.builtin.command:
+        cmd: >-
+          pct exec {{ tunnel_ingress_ctid }} --
+          bash -c "echo 'deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg]
+          https://pkg.cloudflare.com/cloudflared
+          {{ tunnel_ingress_cloudflare_apt_codename }} main'
+          > /etc/apt/sources.list.d/cloudflared.list"
+      when: tunnel_ingress_cloudflared_present.rc != 0
+      changed_when: true
+
+    - name: Install cloudflared
+      ansible.builtin.command:
+        cmd: >-
+          pct exec {{ tunnel_ingress_ctid }} --
+          bash -c "apt-get update && apt-get install -y cloudflared"
+      when: tunnel_ingress_cloudflared_present.rc != 0
+      changed_when: true
+
+    - name: Check whether the cloudflared service is already active
+      ansible.builtin.command:
+        cmd: "pct exec {{ tunnel_ingress_ctid }} -- systemctl is-active cloudflared"
+      register: tunnel_ingress_service_active
+      changed_when: false
+      failed_when: false
+      check_mode: false
+
+    - name: Install cloudflared as a service using the tunnel token
+      ansible.builtin.command:
+        cmd: >-
+          pct exec {{ tunnel_ingress_ctid }} --
+          cloudflared service install {{ cloudflare_tunnel_token }}
+      when: tunnel_ingress_service_active.stdout != "active"
+      changed_when: true
+      no_log: true
+
+    - name: Ensure the cloudflared service is enabled and started
+      ansible.builtin.command:
+        cmd: "pct exec {{ tunnel_ingress_ctid }} -- systemctl enable --now cloudflared"
+      changed_when: false

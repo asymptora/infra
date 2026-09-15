@@ -22,6 +22,18 @@
 # nesting is set at creation rather than afterwards: without it, service
 # management inside containers running systemd 259 or newer fails
 # silently, and diagnosing that after the fact costs materially more time.
+# vmbr0 on pve1 is an isolated, NAT'd bridge (no DHCP server answers on
+# it), so ip=dhcp silently leaves the container with no address. A static
+# address is required unless the caller explicitly opts into DHCP on a
+# bridge that actually serves it. Computed once so both commands below
+# stay short enough to lint cleanly.
+- name: Compute the network configuration clause
+  ansible.builtin.set_fact:
+    lxc_provision_net0_ip_clause: >-
+      {{ 'ip=' + lxc_provision_ip + ',gw=' + lxc_provision_gateway
+      if (lxc_provision_ip | default('dhcp')) != 'dhcp'
+      else 'ip=dhcp' }}
+
 - name: Create the container
   ansible.builtin.command: >
     pct create {{ lxc_provision_ctid }} {{ lxc_provision_template }}
@@ -33,8 +45,17 @@
     --unprivileged {{ 1 if lxc_provision_unprivileged else 0 }}
     --onboot {{ 1 if lxc_provision_onboot else 0 }}
     --features nesting={{ 1 if lxc_provision_nesting else 0 }}
-    --net0 name=eth0,bridge=vmbr0,ip=dhcp
+    --net0 name=eth0,bridge=vmbr0,{{ lxc_provision_net0_ip_clause }}
   when: lxc_provision_pct_status.rc != 0
+  changed_when: true
+
+# Runs every time, not just at creation, so network settings stay
+# declared even if a container was created before this variable existed.
+- name: Ensure network configuration matches the declared address
+  ansible.builtin.command: >
+    pct set {{ lxc_provision_ctid }}
+    --net0 name=eth0,bridge=vmbr0,{{ lxc_provision_net0_ip_clause }}
+  when: (lxc_provision_ip | default('dhcp')) != 'dhcp'
   changed_when: true
 
 - name: Start the container
@@ -51,17 +72,30 @@
   delay: 2
   changed_when: false
 
-# --ssh-public-keys exists only on pct create. For an existing container
-# the key is pushed from the host, which requires neither container
-# networking nor an interactive session.
 - name: Create the SSH directory
   ansible.builtin.command: "pct exec {{ lxc_provision_ctid }} -- mkdir -p /root/.ssh"
   changed_when: true
 
+# pct push reads its source from the Proxmox node's own local filesystem,
+# not from the Ansible controller. lxc_provision_ssh_public_key_path is a
+# path on the operator's workstation (the controller), so it has to be
+# staged onto the node first with ansible.builtin.copy, whose src is
+# resolved against the controller, before pct push can read it locally.
+- name: Stage the public key on the Proxmox host
+  ansible.builtin.copy:
+    src: "{{ lxc_provision_ssh_public_key_path }}"
+    dest: "/tmp/lxc_provision_{{ lxc_provision_ctid }}.pub"
+    mode: "0600"
+
 - name: Install the authorized key
   ansible.builtin.command: >
-    pct push {{ lxc_provision_ctid }} {{ lxc_provision_ssh_public_key_path }} /root/.ssh/authorized_keys
+    pct push {{ lxc_provision_ctid }} /tmp/lxc_provision_{{ lxc_provision_ctid }}.pub /root/.ssh/authorized_keys
   changed_when: true
+
+- name: Remove the staged key from the Proxmox host
+  ansible.builtin.file:
+    path: "/tmp/lxc_provision_{{ lxc_provision_ctid }}.pub"
+    state: absent
 
 - name: Set SSH directory permissions
   ansible.builtin.command: "pct exec {{ lxc_provision_ctid }} -- {{ item }}"

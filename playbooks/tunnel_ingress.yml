@@ -1,0 +1,13 @@
+---
+- name: Deploy the tunnel daemon in a dedicated container
+  hosts: proxmox_nodes
+  gather_facts: true
+  tasks:
+    - name: Load the encrypted tunnel token
+      community.sops.load_vars:
+        file: "{{ playbook_dir }}/../inventories/production/secrets.sops.yml"
+      no_log: true
+
+    - name: Apply the tunnel ingress role
+      ansible.builtin.include_role:
+        name: tunnel_ingress
