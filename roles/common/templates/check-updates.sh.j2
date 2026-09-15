@@ -1,0 +1,21 @@
+#!/bin/sh
+# Managed by Ansible (roles/common). Run monthly by check-updates.timer.
+# Notifies only when there is something to act on: no heartbeat message
+# on a clean run.
+set -eu
+
+upgradable=$(apt list --upgradable 2>/dev/null | grep -vc '^Listing')
+
+reboot_required=0
+[ -f /var/run/reboot-required ] && reboot_required=1
+
+if [ "$upgradable" -gt 0 ] || [ "$reboot_required" -eq 1 ]; then
+  message="$(hostname):"
+  if [ "$upgradable" -gt 0 ]; then
+    message="$message $upgradable package(s) available for upgrade."
+  fi
+  if [ "$reboot_required" -eq 1 ]; then
+    message="$message Reboot pending."
+  fi
+  curl -fsS -d "$message" https://ntfy.sh/{{ ntfy_topic }} > /dev/null
+fi

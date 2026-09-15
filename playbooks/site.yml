@@ -1,5 +1,10 @@
 ---
 - name: Node baseline
   hosts: proxmox_nodes
+  pre_tasks:
+    - name: Load the encrypted notification topic
+      community.sops.load_vars:
+        file: "{{ playbook_dir }}/../inventories/production/secrets.sops.yml"
+      no_log: true
   roles:
     - common

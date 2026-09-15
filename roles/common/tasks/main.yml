@@ -72,3 +72,40 @@
     group: root
     mode: "0644"
   notify: Restart journald
+
+# Added while resolving a gap raised after RFC 0001 closed: detection
+# already existed (playbooks/maintenance.yml) but nothing scheduled it,
+# and running it from the operator workstation would be unreliable, since
+# the workstation suspends. The check runs on the node itself instead,
+# which is always on.
+- name: Deploy the update check script
+  ansible.builtin.template:
+    src: check-updates.sh.j2
+    dest: /usr/local/sbin/check-updates.sh
+    owner: root
+    group: root
+    mode: "0700"
+  no_log: true
+
+- name: Deploy the update check service unit
+  ansible.builtin.copy:
+    src: check-updates.service
+    dest: /etc/systemd/system/check-updates.service
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Deploy the update check timer unit
+  ansible.builtin.copy:
+    src: check-updates.timer
+    dest: /etc/systemd/system/check-updates.timer
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Ensure the update check timer is enabled and started
+  ansible.builtin.systemd_service:
+    name: check-updates.timer
+    state: started
+    enabled: true
+    daemon_reload: true
