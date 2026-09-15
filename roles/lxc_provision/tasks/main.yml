@@ -25,7 +25,15 @@
 # vmbr0 on pve1 is an isolated, NAT'd bridge (no DHCP server answers on
 # it), so ip=dhcp silently leaves the container with no address. A static
 # address is required unless the caller explicitly opts into DHCP on a
-# bridge that actually serves it.
+# bridge that actually serves it. Computed once so both commands below
+# stay short enough to lint cleanly.
+- name: Compute the network configuration clause
+  ansible.builtin.set_fact:
+    lxc_provision_net0_ip_clause: >-
+      {{ 'ip=' + lxc_provision_ip + ',gw=' + lxc_provision_gateway
+      if (lxc_provision_ip | default('dhcp')) != 'dhcp'
+      else 'ip=dhcp' }}
+
 - name: Create the container
   ansible.builtin.command: >
     pct create {{ lxc_provision_ctid }} {{ lxc_provision_template }}
@@ -37,7 +45,7 @@
     --unprivileged {{ 1 if lxc_provision_unprivileged else 0 }}
     --onboot {{ 1 if lxc_provision_onboot else 0 }}
     --features nesting={{ 1 if lxc_provision_nesting else 0 }}
-    --net0 name=eth0,bridge=vmbr0,{{ 'ip=' + lxc_provision_ip + ',gw=' + lxc_provision_gateway if (lxc_provision_ip | default('dhcp')) != 'dhcp' else 'ip=dhcp' }}
+    --net0 name=eth0,bridge=vmbr0,{{ lxc_provision_net0_ip_clause }}
   when: lxc_provision_pct_status.rc != 0
   changed_when: true
 
@@ -46,7 +54,7 @@
 - name: Ensure network configuration matches the declared address
   ansible.builtin.command: >
     pct set {{ lxc_provision_ctid }}
-    --net0 name=eth0,bridge=vmbr0,{{ 'ip=' + lxc_provision_ip + ',gw=' + lxc_provision_gateway if (lxc_provision_ip | default('dhcp')) != 'dhcp' else 'ip=dhcp' }}
+    --net0 name=eth0,bridge=vmbr0,{{ lxc_provision_net0_ip_clause }}
   when: (lxc_provision_ip | default('dhcp')) != 'dhcp'
   changed_when: true
 
