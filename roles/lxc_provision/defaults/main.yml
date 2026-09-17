@@ -10,4 +10,12 @@ lxc_provision_rootfs_gb: 4
 lxc_provision_unprivileged: true
 lxc_provision_onboot: true
 lxc_provision_nesting: true
+
+# keyctl is opt-in, unlike nesting: only containers running a workload
+# that needs kernel keyring access (Docker's overlay2 storage driver is
+# the case that prompted this) should get it. Defaulting it on would
+# widen the syscall surface for every container using this role, most of
+# which don't need it.
+lxc_provision_keyctl: false
+
 lxc_provision_ssh_public_key_path: ""

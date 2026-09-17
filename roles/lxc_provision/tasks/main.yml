@@ -44,7 +44,7 @@
     --rootfs {{ lxc_provision_storage }}:{{ lxc_provision_rootfs_gb }}
     --unprivileged {{ 1 if lxc_provision_unprivileged else 0 }}
     --onboot {{ 1 if lxc_provision_onboot else 0 }}
-    --features nesting={{ 1 if lxc_provision_nesting else 0 }}
+    --features nesting={{ 1 if lxc_provision_nesting else 0 }},keyctl={{ 1 if lxc_provision_keyctl else 0 }}
     --net0 name=eth0,bridge=vmbr0,{{ lxc_provision_net0_ip_clause }}
   when: lxc_provision_pct_status.rc != 0
   changed_when: true
