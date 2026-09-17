@@ -1,7 +1,7 @@
 ---
 lxc_provision_ctid: ""
 lxc_provision_hostname: ""
-lxc_provision_template: "hdd-cold:vztmpl/debian-13-standard_13.0-1_amd64.tar.zst"
+lxc_provision_template: "hdd-cold:vztmpl/debian-13-standard_13.6-1_amd64.tar.zst"
 lxc_provision_storage: "local-lvm"
 lxc_provision_cores: 1
 lxc_provision_memory_mb: 512
