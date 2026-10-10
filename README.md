@@ -53,6 +53,7 @@ Measured baseline (2026-08-29): 130 Mbit/s sustained between nodes,
 docs/architecture/adr/    Architecture decision records
 docs/rfcs/                Design proposals that precede ADRs
 docs/runbooks/            Operational procedures
+docs/incidents/           Incident records and post-mortems
 inventories/production/   Ansible inventory and variables
 playbooks/                Entry point playbooks
 roles/                    Roles by domain
@@ -102,6 +103,12 @@ infrastructure or as code in this repository.
 | [0007](docs/architecture/adr/0007-static-dns-records-for-hypervisors.md) | Static DNS records for statically addressed hypervisors |
 | [0008](docs/architecture/adr/0008-sops-age-for-secret-material.md) | SOPS with age for secret material |
 | [0009](docs/architecture/adr/0009-nfs-backup-storage.md) | Thin LV backup storage on pve2 with NFS transport |
+
+## Incidents
+
+| Date | Incident |
+|---|---|
+| 2026-10-10 | [pve1 Wi-Fi data path stall](docs/incidents/2026-10-10-pve1-wifi-stall.md) |
 
 ## Security
 
